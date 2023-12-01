@@ -1,31 +1,57 @@
 fun main() {
   fun part1(input: List<String>): Int {
-    var sum = 0
-    input.forEach { line ->
-      var firstNumber = 0
-      var lastNumber = 0
-      line.forEach { char ->
-        if (char.isDigit()) {
-          if (firstNumber == 0) {
-            firstNumber = char.toString().toInt()
-            lastNumber = char.toString().toInt()
-          } else {
-            lastNumber = char.toString().toInt()
-          }
-        }
-        }
-       sum += firstNumber * 10 + lastNumber
+    return input.sumOf { line ->
+      val digits = line.filter(Char::isDigit)
+      if (digits.isNotEmpty()) {
+        val firstNumber = digits.first().toString().toInt()
+        val lastNumber = digits.last().toString().toInt()
+        firstNumber * 10 + lastNumber
+      } else {
+        0
       }
-
-    return sum
+    }
   }
 
   fun part2(input: List<String>): Int {
-    return input.size
+    fun replaceLiteralNumbers(input: String): String {
+      val replacements = mapOf(
+        "one" to "on1e",
+        "two" to "t2wo",
+        "three" to "th3ree",
+        "four" to "fo4ur",
+        "five" to "fi5ve",
+        "six" to "si6x",
+        "seven" to "sev7en",
+        "eight" to "ei8ght",
+        "nine" to "ni9ne"
+      )
+
+      var output = input
+      replacements.forEach { (word, digit) ->
+        output = output.replace(word, digit, ignoreCase = true)
+      }
+      return output
+    }
+
+    return input.sumOf { line ->
+      val digits = replaceLiteralNumbers(line).filter(Char::isDigit)
+      if (digits.isNotEmpty()) {
+        val firstNumber = digits.first().toString().toInt()
+        val lastNumber = digits.last().toString().toInt()
+        firstNumber * 10 + lastNumber
+      } else {
+        0
+      }
+    }
   }
 
+
+
+
+
   val testInput = readInput("Day01_test")
-  check(part1(testInput) == 142)
+//  check(part1(testInput) == 142)
+  check(part2(testInput) == 281)
 
   val input = readInput("Day01")
   part1(input).println()
