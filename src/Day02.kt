@@ -1,13 +1,22 @@
 import java.util.*
 
 enum class Color {
-  RED, GREEN, BLUE
+  RED,
+  GREEN,
+  BLUE
 }
 
+const val MAX_RED = 12
+const val MAX_GREEN = 13
+const val MAX_BLUE = 14
+
 fun main() {
-  val maxValues = listOf(Color.RED to 12, Color.GREEN to 13, Color.BLUE to 14)
+  val maxValues = listOf(Color.RED to MAX_RED, Color.GREEN to MAX_GREEN, Color.BLUE to MAX_BLUE)
+
+  // This function processes a reveal string (e.g., "3 blue, 2 red") and returns a list of pairs,
+  // where each pair consists of a Color and an Int representing the number of that color in the
+  // reveal.
   fun processReveal(reveal: String): List<Pair<Color, Int>> {
-    // reveal = 3 blue, 2 red
     val revealsList = reveal.trim().split(", ")
     return revealsList.map { rev ->
       val value = rev.substringBefore(" ").toInt()
@@ -17,23 +26,18 @@ fun main() {
   }
 
   fun part1(input: List<String>): Int {
-    var sum = 0
-    input.forEach { line ->
-      var yeet = line.removePrefix("Game ")
-      val gameIdx = yeet.substringBefore(":").toInt()
-      yeet = yeet.substringAfter(": ")
-      var isRevealPossible = true
-      yeet.split(";").forEach {reveal ->
-        processReveal(reveal).forEach { (revealColor, revealValue) ->
-          if (revealValue > (maxValues.find { it.first == revealColor }?.second ?: 0))
-            isRevealPossible = false
-        }
-      }
-      if (isRevealPossible) {
-        sum += gameIdx
-      }
+    return input.sumOf { line ->
+      var gameData = line.removePrefix("Game ")
+      val gameIdx = gameData.substringBefore(":").toInt()
+      gameData = gameData.substringAfter(": ")
+      val isRevealPossible =
+          gameData.split(";").none { reveal ->
+            processReveal(reveal).any { (revealColor, revealValue) ->
+              revealValue > (maxValues.find { it.first == revealColor }?.second ?: 0)
+            }
+          }
+      if (isRevealPossible) gameIdx else 0
     }
-    return sum
   }
 
   fun part2(input: List<String>): Int {
