@@ -31,22 +31,38 @@ fun main() {
       val gameIdx = gameData.substringBefore(":").toInt()
       gameData = gameData.substringAfter(": ")
       val isRevealPossible =
-          gameData.split(";").none { reveal ->
-            processReveal(reveal).any { (revealColor, revealValue) ->
-              revealValue > (maxValues.find { it.first == revealColor }?.second ?: 0)
-            }
+        gameData.split(";").none { reveal ->
+          processReveal(reveal).any { (revealColor, revealValue) ->
+            revealValue > (maxValues.find { it.first == revealColor }?.second ?: 0)
           }
+        }
       if (isRevealPossible) gameIdx else 0
     }
   }
 
   fun part2(input: List<String>): Int {
-    return input.size
+    return input.sumOf { line ->
+      val gameData = line.substringAfter(": ")
+      var minValueRed = 0
+      var minValueGreen = 0
+      var minValueBlue = 0
+
+      gameData.split(";").forEach { reveal ->
+        processReveal(reveal).forEach { (revealColor, revealValue) ->
+          when (revealColor) {
+            Color.RED -> minValueRed = maxOf(minValueRed, revealValue)
+            Color.GREEN -> minValueGreen = maxOf(minValueGreen, revealValue)
+            Color.BLUE -> minValueBlue = maxOf(minValueBlue, revealValue)
+          }
+        }
+      }
+      minValueBlue * minValueGreen * minValueRed
+    }
   }
 
   val testInput = readInput("Day02_test")
   check(part1(testInput) == 8)
-  //  check(part2(testInput) == 281)
+  check(part2(testInput) == 2286)
 
   val input = readInput("Day02")
   part1(input).println()
