@@ -1,28 +1,25 @@
 fun main() {
   fun part1(input: List<String>): Int {
     return input.sumOf { line ->
-      var cardData = line.substringAfter(": ")
-      var winningNumbers = cardData.substringBefore(" | ")
+      val cardData = line.substringAfter(": ")
+      val winningNumbers = cardData
+        .substringBefore(" | ")
+        .split(" ")
+        .filter { it.isNotEmpty() }
+        .map { it.toInt() }
+      val cardNumbers = cardData
+        .substringAfter(" | ")
         .split(" ")
         .filter { it.isNotEmpty() }
         .map { it.toInt() }
 
-      var cardNumbers = cardData.substringAfter(" | ")
-        .split(" ")
-        .filter { it.isNotEmpty() }
-        .map { it.toInt() }
-
-      var valueOfCard = 0
-      for (element in cardNumbers) {
-        if (element in winningNumbers) {
-          if (valueOfCard == 0)
-            valueOfCard += 1
-          else valueOfCard *= 2
+      cardNumbers.fold(0) { cardValue, number ->
+        if (number in winningNumbers) {
+          if (cardValue == 0) cardValue + 1 else cardValue * 2
+        } else {
+          cardValue
         }
-      }
-
-
-      valueOfCard
+      }.toInt()
     }
   }
 
